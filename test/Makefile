@@ -11,7 +11,7 @@ all: catch2_testing
 catch2_testing: $(objects) Makefile
 	$(CXX) $(CXXFLAGS) -o catch2_testing $(objects)
 
-%.o: %.cpp Makefile
+%.o: %.cpp Makefile 
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
 depend: .depend
