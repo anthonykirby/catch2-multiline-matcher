@@ -3,7 +3,7 @@ CXXFLAGS := -std=c++14
 RM := rm -f
 
 our_includefiles := ../catch2-multiline-matcher.hpp
-srcfiles := catch_main.cpp catch2-multiline-matcher.t.cpp
+srcfiles := catch_main.cpp catch2-multiline-matcher.t.cpp catch2-multiline-matcher_demo.cpp
 objects  := $(patsubst %.cpp, %.o, $(srcfiles))
 
 all: catch2_testing

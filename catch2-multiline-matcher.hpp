@@ -5,8 +5,9 @@
 /**
  * 
  * Custom matchers for multi-line strings
- * - NoLinesMatch
  * - OneLineMatches
+ * - NoLinesMatch / NoLineMatches
+ * - AllLinesMatch
  * 
  */
 
@@ -29,40 +30,48 @@ namespace CatchExtension {
 	class MultiLineMatcher : public Catch::MatcherBase<std::string> {
 	public:
 
-		enum HOW_MANY_MATCHES {
-			MATCH_ALL,
-			MATCH_NONE,
-			MATCH_ONE
+		enum class MatchCount {
+			ALL,
+			NONE,
+			ONE
 		};
 
-		enum COMPARISON {
-			COMPARISON_MATCHES,
-			COMPARISON_CONTAINS
+		enum class Comparison {
+			MATCHES,
+			CONTAINS
 		};
 
 		MultiLineMatcher(
-				std::string expression,
+				std::string const& expression,
 				Catch::CaseSensitive::Choice caseSensitivity,
-				HOW_MANY_MATCHES howManyMatches,
-				COMPARISON comparison
+				MatchCount howManyMatches,
+				Comparison comparison
 				) :
 			m_expression(expression), 
 			m_caseSensitivity(caseSensitivity),
 			m_howManyMatches(howManyMatches), 
-			m_comparison(comparison) {
+			m_comparison(comparison)
+		{
+			// for _Contains_, precompute lower-case if case-insensitive
+			if (m_comparison==Comparison::CONTAINS && m_caseSensitivity==Catch::CaseSensitive::Choice::No) {
+				Catch::toLowerInPlace(m_expression);
+			}
+
 		}
 
-		bool lineMatches(std::string line) const {
-			if (m_comparison == COMPARISON_MATCHES) {
+		bool lineMatches(std::string &line) const {
+			if (m_comparison == Comparison::MATCHES) {
 				auto flags = std::regex::ECMAScript; // ECMAScript is the default syntax option anyway
 				if (m_caseSensitivity == Catch::CaseSensitive::Choice::No) {
 					flags |= std::regex::icase;
 				}
 				auto reg = std::regex(m_expression, flags);
 				return std::regex_match(line, reg);
-			} else if (m_comparison == COMPARISON_CONTAINS) {
-				// TODO
-				return false;
+			} else if (m_comparison == Comparison::CONTAINS) {
+				if (m_caseSensitivity == Catch::CaseSensitive::Choice::No) {
+					Catch::toLowerInPlace(line);
+				}
+				return Catch::contains(line, m_expression);
 			} else {
 				return false; // bug 
 			}
@@ -70,7 +79,6 @@ namespace CatchExtension {
 
 
 		// Performs the test for this matcher
-
 		virtual bool match(std::string const& multiline) const override {
 			auto lines = split_lines(multiline);
 			int count_matches = 0;
@@ -82,37 +90,37 @@ namespace CatchExtension {
 				count_lines++;
 			}
 			switch (m_howManyMatches) {
-				case MATCH_ALL: return count_matches == count_lines;
-				case MATCH_ONE: return count_matches == 1;
-				case MATCH_NONE: return count_matches == 0;
+				case MatchCount::ALL: return count_matches == count_lines;
+				case MatchCount::ONE: return count_matches == 1;
+				case MatchCount::NONE: return count_matches == 0;
 				default: return false; // bug
 			}
 		}
 
 		// Produces a string describing what this matcher does. It should
-		// include any provided data (the begin/ end in this case) and
+		// include any provided data and
 		// be written as if it were stating a fact (in the output it will be
 		// preceded by the value under test).
-
 		virtual std::string describe() const {
 			std::ostringstream ss;
+			bool plural;
 			switch (m_howManyMatches) {
-				case MATCH_ALL:  ss << "all lines"; break;
-				case MATCH_ONE:  ss << "exactly one line";  break;
-				case MATCH_NONE: ss << "no lines";  break;
+				case MatchCount::ALL:  ss << "all lines"; plural=false; break;
+				case MatchCount::ONE:  ss << "exactly one line"; plural=true; break;
+				case MatchCount::NONE: ss << "no lines";  plural=false;
 			}
 			switch(m_comparison) {
-				case COMPARISON_MATCHES:  ss << " matches";  break;	// TODO singular/plural
-				case COMPARISON_CONTAINS: ss << " contains"; break;
+				case Comparison::MATCHES:  ss << " match" << (plural?"es":"");  break;	// TODO singular/plural
+				case Comparison::CONTAINS: ss << " contain" << (plural?"s":""); break;
 			}
 			ss << " expression \"" << m_expression << "\"";
 			return ss.str();
 		}
 
 	protected:
-		const std::string m_expression;
-		const HOW_MANY_MATCHES m_howManyMatches;
-		const COMPARISON m_comparison;
+		std::string m_expression;
+		const MatchCount m_howManyMatches;
+		const Comparison m_comparison;
 		const bool m_caseSensitivity;
 
 		// split a multi-line string into vector of single-line strings
@@ -130,33 +138,92 @@ namespace CatchExtension {
 	};
 
 	inline MultiLineMatcher OneLineMatches(
-			std::string expression, 
+			std::string const&expression, 
 			Catch::CaseSensitive::Choice caseSensitivity = Catch::CaseSensitive::Choice::Yes
 			) {
-		return MultiLineMatcher(expression, caseSensitivity, MultiLineMatcher::MATCH_ONE, MultiLineMatcher::COMPARISON_MATCHES);
+		return MultiLineMatcher(
+				expression, 
+				caseSensitivity, 
+				MultiLineMatcher::MatchCount::ONE, 
+				MultiLineMatcher::Comparison::MATCHES);
 	}
 
 	inline MultiLineMatcher NoLinesMatch(
-			std::string expression, 
+			std::string const&expression, 
 			Catch::CaseSensitive::Choice caseSensitivity = Catch::CaseSensitive::Choice::Yes
 			) {
-		return MultiLineMatcher(expression, caseSensitivity, MultiLineMatcher::MATCH_NONE, MultiLineMatcher::COMPARISON_MATCHES);
+		return MultiLineMatcher(
+				expression, 
+				caseSensitivity, 
+				MultiLineMatcher::MatchCount::NONE, 
+				MultiLineMatcher::Comparison::MATCHES);
 	}
 	inline MultiLineMatcher NoLineMatches(
-			std::string expression, 
+			std::string const&expression, 
 			Catch::CaseSensitive::Choice caseSensitivity = Catch::CaseSensitive::Choice::Yes
 			) {
-		return MultiLineMatcher(expression, caseSensitivity, MultiLineMatcher::MATCH_NONE, MultiLineMatcher::COMPARISON_MATCHES);
+		return MultiLineMatcher(
+				expression, 
+				caseSensitivity, 
+				MultiLineMatcher::MatchCount::NONE, 
+				MultiLineMatcher::Comparison::MATCHES);
 	}
 
 	inline MultiLineMatcher AllLinesMatch(
-			std::string expression, 
+			std::string const&expression, 
 			Catch::CaseSensitive::Choice caseSensitivity = Catch::CaseSensitive::Choice::Yes
 			) {
-		return MultiLineMatcher(expression, caseSensitivity, MultiLineMatcher::MATCH_ALL, MultiLineMatcher::COMPARISON_MATCHES);
+		return MultiLineMatcher(
+				expression, 
+				caseSensitivity, 
+				MultiLineMatcher::MatchCount::ALL, 
+				MultiLineMatcher::Comparison::MATCHES);
 	}
 
+	inline MultiLineMatcher OneLineContains(
+			std::string const&expression, 
+			Catch::CaseSensitive::Choice caseSensitivity = Catch::CaseSensitive::Choice::Yes
+			) {
+		return MultiLineMatcher(
+				expression, 
+				caseSensitivity, 
+				MultiLineMatcher::MatchCount::ONE, 
+				MultiLineMatcher::Comparison::CONTAINS);
+	}
 
+	inline MultiLineMatcher NoLinesContain(
+			std::string const&expression, 
+			Catch::CaseSensitive::Choice caseSensitivity = Catch::CaseSensitive::Choice::Yes
+			) {
+		return MultiLineMatcher(
+				expression, 
+				caseSensitivity, 
+				MultiLineMatcher::MatchCount::NONE, 
+				MultiLineMatcher::Comparison::CONTAINS);
+	}
+	inline MultiLineMatcher NoLineContains(
+			std::string const&expression, 
+			Catch::CaseSensitive::Choice caseSensitivity = Catch::CaseSensitive::Choice::Yes
+			) {
+		return MultiLineMatcher(
+				expression, 
+				caseSensitivity, 
+				MultiLineMatcher::MatchCount::NONE, 
+				MultiLineMatcher::Comparison::CONTAINS);
+	}
+
+	inline MultiLineMatcher AllLinesContain(
+			std::string const&expression, 
+			Catch::CaseSensitive::Choice caseSensitivity = Catch::CaseSensitive::Choice::Yes
+			) {
+		return MultiLineMatcher(
+				expression, 
+				caseSensitivity, 
+				MultiLineMatcher::MatchCount::ALL, 
+				MultiLineMatcher::Comparison::CONTAINS);
+	}
+
+	
 
 
 } // namespace CatchExtension
