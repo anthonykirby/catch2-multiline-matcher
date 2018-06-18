@@ -1,14 +1,14 @@
-$(info default $$CXX is [${CXX}])
-CXX ?= g++
-$(info using $$CXX=[${CXX}])
 
-$(info default $$CXXFLAGS is [${CXXFLAGS}])
+# allow externally-specified compiler (for travis etc)
+CXX ?= g++
+
 CXXFLAGS := -std=c++14
+RM := rm -f
+	
+$(info using $$CXX=[${CXX}])
 $(info using $$CXXFLAGS=[${CXXFLAGS}])
 
-
-RM := rm -f
-
+	
 our_includefiles := ../catch2-multiline-matcher.hpp
 srcfiles := catch_main.cpp catch2-multiline-matcher.t.cpp catch2-multiline-matcher_demo.cpp
 objects  := $(patsubst %.cpp, %.o, $(srcfiles))
@@ -18,7 +18,7 @@ all: catch2_testing
 catch2_testing: $(objects) Makefile
 	$(CXX) $(CXXFLAGS) -o catch2_testing $(objects) -L/usr/lib -lstdc++
 
-%.o: %.cpp Makefile 
+%.o: %.cpp Makefile
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
 depend: .depend
@@ -36,3 +36,10 @@ test: catch2_testing
 
 
 include .depend
+
+display_compiler_version: FORCE
+	@echo "(displaying compiler version...)"
+	$(CXX) --version
+	@echo
+
+FORCE:
