@@ -1,5 +1,12 @@
-CXX := g++
+$(info default $$CXX is [${CXX}])
+CXX ?= g++
+$(info using $$CXX=[${CXX}])
+
+$(info default $$CXXFLAGS is [${CXXFLAGS}])
 CXXFLAGS := -std=c++14
+$(info using $$CXXFLAGS=[${CXXFLAGS}])
+
+
 RM := rm -f
 
 our_includefiles := ../catch2-multiline-matcher.hpp
