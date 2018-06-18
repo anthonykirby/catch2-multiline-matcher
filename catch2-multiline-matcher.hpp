@@ -53,9 +53,9 @@ namespace CatchExtension {
 			m_comparison(comparison)
 		{
 			// for _Contains_, precompute lower-case if case-insensitive
-			if (m_comparison==Comparison::CONTAINS && m_caseSensitivity==Catch::CaseSensitive::Choice::No) {
-				Catch::toLowerInPlace(m_expression);
-			}
+//			if (m_comparison==Comparison::CONTAINS && m_caseSensitivity==Catch::CaseSensitive::Choice::No) {
+//				Catch::toLowerInPlace(m_expression);
+//			}
 
 		}
 
@@ -69,9 +69,10 @@ namespace CatchExtension {
 				return std::regex_match(line, reg);
 			} else if (m_comparison == Comparison::CONTAINS) {
 				if (m_caseSensitivity == Catch::CaseSensitive::Choice::No) {
-					Catch::toLowerInPlace(line);
+					return Catch::contains(Catch::toLower(line), Catch::toLower(m_expression));
+				} else {
+					return Catch::contains(line, m_expression);
 				}
-				return Catch::contains(line, m_expression);
 			} else {
 				return false; // bug 
 			}
