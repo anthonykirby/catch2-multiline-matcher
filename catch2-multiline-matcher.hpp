@@ -52,11 +52,6 @@ namespace CatchExtension {
 			m_howManyMatches(howManyMatches), 
 			m_comparison(comparison)
 		{
-			// for _Contains_, precompute lower-case if case-insensitive
-//			if (m_comparison==Comparison::CONTAINS && m_caseSensitivity==Catch::CaseSensitive::Choice::No) {
-//				Catch::toLowerInPlace(m_expression);
-//			}
-
 		}
 
 		bool lineMatches(std::string &line) const {
