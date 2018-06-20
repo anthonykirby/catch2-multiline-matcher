@@ -64,8 +64,10 @@ namespace CatchExtension {
 				return std::regex_match(line, reg);
 			} else if (m_comparison == Comparison::CONTAINS) {
 				if (m_caseSensitivity == Catch::CaseSensitive::Choice::No) {
+					std::cout << "case insensitive match:" << " line=" << line << " m_expression=" << m_expression << std::endl;
 					return Catch::contains(Catch::toLower(line), Catch::toLower(m_expression));
 				} else {
+					std::cout << "case sensitive match:" << " line=" << line << " m_expression=" << m_expression << std::endl;
 					return Catch::contains(line, m_expression);
 				}
 			} else {
