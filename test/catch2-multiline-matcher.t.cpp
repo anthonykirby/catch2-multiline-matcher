@@ -18,9 +18,14 @@ TEST_CASE("vanilla functionality") {
 		CHECK_THAT("food", !Matches("foo"));
 	}
 
-	SECTION( "sensitivity") {
+	SECTION( "contains sensitivity") {
 		CHECK_THAT("Food", Contains("foo", CaseSensitive::No));
 		CHECK_THAT("Food", !Contains("foo", CaseSensitive::Yes));
+	}
+
+	SECTION( "matches sensitivity") {
+		CHECK_THAT("Food", Matches("foo.*", CaseSensitive::No));
+		CHECK_THAT("Food", !Matches("foo.*", CaseSensitive::Yes));
 	}
 }
 
