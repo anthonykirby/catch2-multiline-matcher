@@ -2,7 +2,8 @@
 # allow externally-specified compiler (for travis etc)
 CXX ?= g++
 
-CXXFLAGS := -std=c++14
+CXXFLAGS ?= -std=c++11
+# for clang CXXFLAGS := -std=c++11 -stdlib=libc++
 RM := rm -f
 	
 $(info using $$CXX=[${CXX}])
@@ -16,7 +17,7 @@ objects  := $(patsubst %.cpp, %.o, $(srcfiles))
 all: catch2_testing
 
 catch2_testing: $(objects) Makefile
-	$(CXX) $(CXXFLAGS) -o catch2_testing $(objects) -L/usr/lib -lstdc++
+	$(CXX) $(CXXFLAGS) -o catch2_testing $(objects)
 
 %.o: %.cpp Makefile
 	$(CXX) -c $(CXXFLAGS) $< -o $@
@@ -43,3 +44,4 @@ display_compiler_version: FORCE
 	@echo
 
 FORCE:
+

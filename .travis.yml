@@ -74,7 +74,7 @@ matrix:
           packages:
             - clang-3.6
       env:
-        - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
+        - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6 && CXXFLAGS=\"-std=c++11 -stdlib=libc++\""
 
 # install fails (unmet dependencies)
 #    # works on Precise and Trusty
@@ -99,7 +99,7 @@ matrix:
           packages:
             - clang-3.8
       env:
-        - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
+        - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8 && CXXFLAGS=\"-std=c++11 -stdlib=libc++\""
 
     # works on Trusty
     - os: linux
@@ -110,7 +110,7 @@ matrix:
           packages:
             - clang-3.9
       env:
-        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
+        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9 && CXXFLAGS=\"-std=c++11 -stdlib=libc++\""
 
     # works on Trusty
     - os: linux
@@ -121,7 +121,7 @@ matrix:
           packages:
             - clang-4.0
       env:
-        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
+        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0 && CXXFLAGS=\"-std=c++11 -stdlib=libc++\""
 
     # works on Trusty
     - os: linux
@@ -132,7 +132,7 @@ matrix:
           packages:
             - clang-5.0
       env:
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && CXXFLAGS=\"-std=c++11 -stdlib=libc++\""
 
 before_install:
     - eval "${MATRIX_EVAL}"    
