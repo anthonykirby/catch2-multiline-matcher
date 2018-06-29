@@ -115,9 +115,9 @@ namespace CatchExtension {
 
 	protected:
 		std::string m_expression;
+		const bool m_caseSensitivity;
 		const MatchCount m_howManyMatches;
 		const Comparison m_comparison;
-		const bool m_caseSensitivity;
 
 		// split a multi-line string into vector of single-line strings
 		std::vector<std::string> split_lines(const std::string& multiline) const {
