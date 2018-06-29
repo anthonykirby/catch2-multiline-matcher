@@ -2,7 +2,7 @@
 # allow externally-specified compiler (for travis etc)
 CXX ?= g++
 
-CXXFLAGS ?= -std=c++11
+CXXFLAGS ?= -std=c++11 -Wall -Wextra -Werror
 # for clang CXXFLAGS := -std=c++11 -stdlib=libc++
 RM := rm -f
 	
