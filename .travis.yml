@@ -104,6 +104,7 @@ matrix:
             - llvm-toolchain-precise-3.8
           packages:
             - clang-3.8
+            - libstdc++-6-dev
       env:
         - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8 && CXXFLAGS=\"-std=c++11 -stdlib=libc++\""
 
@@ -116,6 +117,7 @@ matrix:
             - llvm-toolchain-trusty-3.9
           packages:
             - clang-3.9
+            - libstdc++-6-dev
       env:
         - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9 && CXXFLAGS=\"-std=c++11 -stdlib=libc++\""
 
@@ -128,6 +130,7 @@ matrix:
             - llvm-toolchain-trusty-4.0
           packages:
             - clang-4.0
+            - libstdc++-6-dev
       env:
         - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0 && CXXFLAGS=\"-std=c++11 -stdlib=libc++\""
 
@@ -139,6 +142,7 @@ matrix:
           sources:
             - llvm-toolchain-trusty-5.0
           packages:
+            - libstdc++-6-dev
             - clang-5.0
       env:
         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && CXXFLAGS=\"-std=c++11 -stdlib=libc++\""
